@@ -3,12 +3,17 @@
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <lua.hpp>
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+extern "C" {
+
+#include "lauxlib.h"
+#include "lua.h"
+#include "lualib.h"
 
 #define FREELIST 1
 
@@ -1343,7 +1348,8 @@ static inline int lauxh_isuserdataof(lua_State *L, int idx, const char *tname)
 static inline FILE **lauxh_checkfilep(lua_State *L, int idx)
 {
 #if LUA_VERSION_NUM >= 502
-    luaL_Stream *stream = (luaL_Stream *)luaL_checkudata(L, idx, LUA_FILEHANDLE);
+    luaL_Stream *stream =
+        (luaL_Stream *)luaL_checkudata(L, idx, LUA_FILEHANDLE);
     return &stream->f;
 
 #else
@@ -1567,3 +1573,5 @@ static inline int lauxh_resume(lua_State *L, lua_State *from, int narg)
 #else
 # define lauxh_resume(L, from, narg) lua_resume(L, narg)
 #endif
+
+}
